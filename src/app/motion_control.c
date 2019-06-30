@@ -72,8 +72,8 @@ void MotorCheckErr(void)
 {
     float angle = pitch;
     //倾角大于40度，电池低电压，USB充电 == 关闭电机
-    if (angle < -40 || angle > 40 || CheckBatteryLowPwr()
-        || GetChargingStatus()) {
+    if (angle < -40 || angle > 40 /*|| CheckBatteryLowPwr()
+        || GetChargingStatus()*/) {
         Motor1Pwm = 0;
         Motor2Pwm = 0;
         BodyPosture = EmPostureFall;

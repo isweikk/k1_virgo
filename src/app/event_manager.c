@@ -15,9 +15,16 @@ void EventLoop(void)
         UltrasonicWaveDetect();
     }
 
-    if (VoltageWaitTime > 200) { //200ms 采集一次 过多采集没有意义
+    if (VoltageWaitTime > 1000) { //200ms 采集一次 过多采集没有意义
         VoltageWaitTime = 0;
         GetBatteryVolt();
+       short pitch, roll, yaw;
+       MPU_Get_Accelerometer(&pitch, &roll, &yaw);
+       ulog("test0: %d, %d, %d", pitch, roll, yaw);
+       short gyrox, gyroy, gyroz;
+       MPU_Get_Gyroscope(&gyrox, &gyroy, &gyroz);
+       ulog("test1: %d, %d, %d", gyrox, gyroy, gyroz);
+        //ulog ("encoder: %d, %d", ReadEncoder(2), ReadEncoder(4));
     }
 }
 

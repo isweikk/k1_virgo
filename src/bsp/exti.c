@@ -20,8 +20,8 @@ void MPU6050_EXTI_Init(void)
     GPIO_InitStructure.GPIO_Pin = GPIO_Pin_5;	            //端口配置
     GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU;         //上拉输入
     GPIO_Init(GPIOB, &GPIO_InitStructure);					      //根据设定参数初始化GPIOB 
-    GPIO_EXTILineConfig(GPIO_PortSourceGPIOB,GPIO_PinSource5);
-    EXTI_InitStructure.EXTI_Line=EXTI_Line5;
+    GPIO_EXTILineConfig(GPIO_PortSourceGPIOB, GPIO_PinSource5);
+    EXTI_InitStructure.EXTI_Line = EXTI_Line5;
     EXTI_InitStructure.EXTI_Mode = EXTI_Mode_Interrupt;	
     EXTI_InitStructure.EXTI_Trigger = EXTI_Trigger_Falling;//下降沿触发
     EXTI_InitStructure.EXTI_LineCmd = ENABLE;

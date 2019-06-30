@@ -23,7 +23,6 @@ unsigned char Send_Count; 										 //串口需要发送的数据个数
 
 int DeviceInit(void)
 {
-    CommonTimerInit();  //通用定时器，5ms中断
     Uart1Init(115200);  //only use for print, you can use "ulog" and "ulogd" to print log.
     LedInit();
     KeyInit();
@@ -44,10 +43,12 @@ int DeviceInit(void)
     //OLED_Init();
     
     MPU_Init();					    			 //=====初始化MPU6050			 
-    UltrasonicWaveInit();   //=====初始化超声波的硬件IO口
-    DelayMs(2000);								 //=====延时2s 解决小车上电轮子乱转的问题
+    //UltrasonicWaveInit();   //=====初始化超声波的硬件IO口
+    //DelayMs(1000);								 //=====延时2s 解决小车上电轮子乱转的问题
     MotorInit();									 //=====初始化与电机连接的硬件IO/timer
     MPU6050_EXTI_Init();					 //=====MPU6050 5ms定时中断初始化
+    CommonTimerInit();  //通用定时器，5ms中断
+
     return 0;
 }
 

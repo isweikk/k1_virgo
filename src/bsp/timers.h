@@ -6,8 +6,8 @@
 #include "sys.h"
 
 
-extern volatile u8 VoltageWaitTime;
-extern volatile u8 UltrasonicWaveWaitTime;
+extern volatile u32 VoltageWaitTime;
+extern volatile u32 UltrasonicWaveWaitTime;
 
 void CommonTimerInit(void);
  
