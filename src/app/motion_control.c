@@ -46,8 +46,8 @@ void EXTI9_5_IRQHandler(void)
         EXTI->PR = 1<<5;                                          //===清除LINE5上的中断标志位   
         mpu_dmp_get_data(&pitch, &roll, &yaw);					//===得到欧拉角（姿态角）的数据
         MPU_Get_Gyroscope(&gyrox, &gyroy, &gyroz);				//===得到陀螺仪数据
-        EncoderLeftCnt = -ReadEncoder(2);                          //===读取编码器的值，因为两个电机的旋转了180度的，所以对其中一个取反，保证输出极性一致
-        EncoderRightCnt = ReadEncoder(4);                          //===读取编码器的值
+        EncoderLeftCnt = -ReadEncoder(EmEncoderLeft);                          //===读取编码器的值，因为两个电机的旋转了180度的，所以对其中一个取反，保证输出极性一致
+        EncoderRightCnt = ReadEncoder(EmEncoderRight);                          //===读取编码器的值
         
         Balance_Pwm = balance_UP(pitch, Mechanical_angle, gyroy);   //===平衡环PID控制	
         Velocity_Pwm = velocity(EncoderLeftCnt, EncoderRightCnt);       //===速度环PID控制	 
@@ -63,6 +63,12 @@ void EXTI9_5_IRQHandler(void)
     }
 } 
 
+void MotorGetConstEuler(float *out_pitch, float *out_roll, float *out_yaw)
+{
+    *out_pitch = pitch;
+    *out_roll = roll;
+    *out_yaw = yaw;
+}
 /**************************************************************************
 函数功能：异常关闭电机
 入口参数：

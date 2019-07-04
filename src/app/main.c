@@ -29,6 +29,7 @@ int DeviceInit(void)
     ChargingPortInit();
     AdcInit();                    //=====初始化ADC
     EncoderInit();           //=====初始化编码器
+    OLED_Init();
 
     DelayMs(100);
 /*****************修改蓝牙的默认通信波特率以及蓝牙默认的名字******************/

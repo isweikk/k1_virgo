@@ -77,20 +77,17 @@ int EncoderInit(void)
 }
 /**************************************************************************
 函数功能：单位时间读取编码器计数
-入口参数：定时器
+入口参数：传感器序号
 返回  值：速度值
 **************************************************************************/
-int ReadEncoder(u8 unit_time)
+int ReadEncoder(u8 num)
 {
   int Encoder_TIM;    
-  switch(unit_time) {
-      case 2:
+  switch(num) {
+      case EmEncoderLeft:
           Encoder_TIM= (short)TIM2 -> CNT;  TIM2 -> CNT=0;
-          break;
-      case 3:
-          Encoder_TIM= (short)TIM3 -> CNT;  TIM3 -> CNT=0;
           break;	
-      case 4:
+      case EmEncoderRight:
           Encoder_TIM= (short)TIM4 -> CNT;  TIM4 -> CNT=0;
           break;
       default:

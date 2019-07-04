@@ -23,6 +23,7 @@ enum EnumBodyPosture{
 extern u8 MoveDirection;
 extern u8 BodyPosture;
 
+void MotorGetConstEuler(float *out_pitch, float *out_roll, float *out_yaw);
 
 void EXTI9_5_IRQHandler(void);
 int balance_UP(float Angle,float Mechanical_balance,float Gyro);
