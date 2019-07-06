@@ -1,5 +1,11 @@
-/**
- * motion controller
+/*
+ * @Descripttion: motion controller
+ * @version: v1.0.0
+ * @Author: Kevin
+ * @Email: kkcoding@qq.com
+ * @Date: 2019-06-15 02:37:14
+ * @LastEditors: Kevin
+ * @LastEditTime: 2019-07-06 23:39:48
  */
 
 #include "motion_control.h"
