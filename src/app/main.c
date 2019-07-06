@@ -86,22 +86,23 @@ int main(void)
     DeviceInit();
     
     ulog("system init ok");
-
+    float pitch, roll, yaw;
+    
     while (1) {
         EventLoop();
         DelayMs(5);
         KEY_mode_Select();				 //=====模式选择以及屏幕表情显示	
 /*****************将下面的注释去掉即可将 pitch、yaw 输出******************/
-//			DataScope_Get_Channel_Data(pitch, 1 );
-//			DataScope_Get_Channel_Data(yaw, 2 );
-//			DataScope_Get_Channel_Data(roll, 3 );
-//			Send_Count=DataScope_Data_Generate(3);
-//			for( i = 0 ; i < Send_Count; i++) 
-//			{
-//			while((USART1->SR&0X40)==0);  
-//			USART1->DR = DataScope_OutPut_Buffer[i]; 
-//			}
-//			DelayMs(50); //20HZ 
+        MotorGetConstEuler(&pitch, &roll, &yaw);
+        DataScope_Get_Channel_Data(pitch, 1 );
+        DataScope_Get_Channel_Data(roll, 2 );
+        DataScope_Get_Channel_Data(yaw, 3 );
+        Send_Count=DataScope_Data_Generate(3);
+        for (i = 0 ; i < Send_Count; i++) {
+            while((USART1->SR&0X40)==0);  
+            USART1->DR = DataScope_OutPut_Buffer[i]; 
+        }
+        DelayMs(50); //20HZ 
 /*************************************************************************/		
     }
 }

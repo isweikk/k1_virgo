@@ -24,21 +24,21 @@ short gyrox, gyroy, gyroz;						//陀螺仪原始数据
 int Motor1Pwm = 0, Motor2Pwm = 0;               //当前电机的PWM数据
 
 //PID 计算数据
-int Balance_Pwm,Velocity_Pwm,Turn_Pwm;
+int BalancePwm = 0, VelocityPwm = 0, TurnPwm = 0;
 
-float Mechanical_angle=-6; // DIY小轮版本机械中值。
+float MechanicalMidVal = 8.3; // 机械平衡中值。
 
-float balance_UP_KP=280; 	 // 小车直立环KP
-float balance_UP_KD=0.8;
+float BalanceUpKp = 300; 	 // 小车直立环KP
+float BalanceUpKd = 1;
 
-float velocity_KP=90;
-float velocity_KI=0.45;
+float VelocityKp = 80;
+float VelocityKi = 0.4;  //VelocityKp/200;
 
 //
 u8 MoveDirection = EmBodyStop;
 u8 BodyPosture = EmPostureNone; //身体姿态
 
-void MotorCheckErr(void);
+int MotorCheckErr(void);
 
 void EXTI9_5_IRQHandler(void) 
 {    
@@ -49,15 +49,15 @@ void EXTI9_5_IRQHandler(void)
         EncoderLeftCnt = -ReadEncoder(EmEncoderLeft);                          //===读取编码器的值，因为两个电机的旋转了180度的，所以对其中一个取反，保证输出极性一致
         EncoderRightCnt = ReadEncoder(EmEncoderRight);                          //===读取编码器的值
         
-        Balance_Pwm = balance_UP(pitch, Mechanical_angle, gyroy);   //===平衡环PID控制	
-        Velocity_Pwm = velocity(EncoderLeftCnt, EncoderRightCnt);       //===速度环PID控制	 
-        if (MoveDirection == EmBodyTurnLeft
-            || MoveDirection == EmBodyTrunRight)    
-            Turn_Pwm = turn(EncoderLeftCnt, EncoderRightCnt, gyroz);        //===转向环PID控制
-        else
-            Turn_Pwm = (-0.5) * gyroz;
-        Motor1Pwm = Balance_Pwm - Velocity_Pwm - Turn_Pwm;                 //===计算左轮电机最终PWM
-        Motor2Pwm = Balance_Pwm - Velocity_Pwm + Turn_Pwm;                 //===计算右轮电机最终PWM
+        BalancePwm = BalanceKeepUp(pitch, MechanicalMidVal, gyroy);   //===平衡环PID控制	
+        VelocityPwm = VelocityKeep(EncoderLeftCnt, EncoderRightCnt);       //===速度环PID控制	 
+        // if (MoveDirection == EmBodyTurnLeft
+        //     || MoveDirection == EmBodyTrunRight)    
+        //     TurnPwm = turn(EncoderLeftCnt, EncoderRightCnt, gyroz);        //===转向环PID控制
+        // else
+        //     TurnPwm = (-0.5) * gyroz;
+        Motor1Pwm = BalancePwm - VelocityPwm - TurnPwm;                 //===计算左轮电机最终PWM
+        Motor2Pwm = BalancePwm - VelocityPwm + TurnPwm;                 //===计算右轮电机最终PWM
         MotorCheckErr();											//===检查异常
         MotorSetPwm(Motor1Pwm, Motor2Pwm);                           //===赋值给PWM寄存器  
     }
@@ -72,9 +72,9 @@ void MotorGetConstEuler(float *out_pitch, float *out_roll, float *out_yaw)
 /**************************************************************************
 函数功能：异常关闭电机
 入口参数：
-返回  值：无
+返回  值：0=ok, 1=error
 **************************************************************************/
-void MotorCheckErr(void)
+int MotorCheckErr(void)
 {
     float angle = pitch;
     //倾角大于40度，电池低电压，USB充电 == 关闭电机
@@ -83,9 +83,11 @@ void MotorCheckErr(void)
         Motor1Pwm = 0;
         Motor2Pwm = 0;
         BodyPosture = EmPostureFall;
+        return 1;
     } else {
         BodyPosture = EmPostureNone;
     }
+    return 0;
 }
 
 /**************************************************************************
@@ -93,12 +95,12 @@ void MotorCheckErr(void)
 入口参数：角度、机械平衡角度（机械中值）、角速度
 返回  值：直立控制PWM
 **************************************************************************/
-int balance_UP(float Angle,float Mechanical_balance,float Gyro)
+int BalanceKeepUp(float pitch, float mid_val, float gyro)
 {  
-    float Bias;
+    float bias;
     int balance;
-    Bias = Angle - Mechanical_balance;    							 //===求出平衡的角度中值和机械相关
-    balance = balance_UP_KP * Bias + balance_UP_KD * Gyro;  //===计算平衡控制的电机PWM  PD控制   kp是P系数 kd是D系数 
+    bias = pitch - mid_val;    							 //===求出平衡的角度中值和机械相关
+    balance = BalanceUpKp * bias + BalanceUpKd * gyro;   //===计算平衡控制的电机PWM  PD控制   kp是P系数 kd是D系数 
     return balance;
 }
 
@@ -107,37 +109,38 @@ int balance_UP(float Angle,float Mechanical_balance,float Gyro)
 入口参数：电机编码器的值
 返回  值：速度控制PWM
 **************************************************************************/
-int velocity(int encoder_left,int encoder_right)
+int VelocityKeep(int encoder_left, int encoder_right)
 {  
-    static float Velocity, Encoder_Least, Encoder, Movement;
-    static float Encoder_Integral;
+    static float velocity_pwm, encoder_least, encoder_filter, encoder_integral;
+    static float movement;
 
     if (MoveDirection == EmBodyGoForward) {
-        Movement = 20;
+        movement = 20;
     } else if (MoveDirection == EmBodyGoBackward) {
-        Movement = -20;
+        movement = -20;
     } else if(UltrasonicWaveWarning()) {
-        Movement = -10;		
+        movement = -10;		
     } else {	
-        Movement = 0;
+        movement = 0;
     }
     //=============速度PI控制器=======================//	
-    Encoder_Least = (EncoderLeftCnt + EncoderRightCnt) - 0;                    //===获取最新速度偏差==测量速度（左右编码器之和）-目标速度（此处为零） 
-    Encoder *= 0.8;		                                                //===一阶低通滤波器       
-    Encoder += Encoder_Least * 0.2;	                                    //===一阶低通滤波器    
-    Encoder_Integral += Encoder;                                       //===积分出位移 积分时间：10ms
-    Encoder_Integral = Encoder_Integral - Movement;                       //===接收遥控器数据，控制前进后退
-    if (Encoder_Integral > 10000) {										//===积分限幅
-        Encoder_Integral = 10000;
+    encoder_least = (encoder_left + encoder_right) - 0;                 //===获取最新速度偏差==测量速度（左右编码器之和）-目标速度（此处为零） 
+    encoder_filter *= 0.7;		                                        //===一阶低通滤波器       
+    encoder_filter += encoder_least * 0.3;	                            //===一阶低通滤波器    
+    encoder_integral += encoder_filter;                                 //===积分出位移 积分时间：10ms
+    encoder_integral = encoder_integral - movement;                     //===接收遥控器数据，控制前进后退
+    if (encoder_integral > 10000) {										//===积分限幅
+        encoder_integral = 10000;
     }
-    if (Encoder_Integral < -10000)	{	//===积分限幅	
-        Encoder_Integral = -10000;
+    if (encoder_integral < -10000)	{	//===积分限幅	
+        encoder_integral = -10000;
     }
-    Velocity = Encoder * velocity_KP + Encoder_Integral * velocity_KI;        //===速度控制	
-    if (pitch < -40 || pitch > 40) {	//===电机关闭后清除积分
-        Encoder_Integral = 0;
+    velocity_pwm = encoder_filter * VelocityKp + encoder_integral * VelocityKi;        //===速度控制	
+    if (MotorCheckErr()) {	//===电机异常后清除积分
+        encoder_filter = 0;
+        encoder_integral = 0;
     }
-    return Velocity;
+    return velocity_pwm;
 }
 
 /**************************************************************************
@@ -145,7 +148,7 @@ int velocity(int encoder_left,int encoder_right)
 入口参数：电机编码器的值、Z轴角速度
 返回  值：转向控制PWM
 **************************************************************************/
-int turn(int encoder_left,int encoder_right,float gyro)//转向控制
+int TurnKeep(int encoder_left,int encoder_right,float gyro)//转向控制
 {
     static float Turn_Target,Turn,Encoder_temp,Turn_Convert=0.9,Turn_Count;
     float Turn_Amplitude=44,Kp=20,Kd=0;     

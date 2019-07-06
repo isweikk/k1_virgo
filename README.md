@@ -1,4 +1,4 @@
-# Robot - K2 Virgo
+# Robot - K1 Virgo
 - He is a very small robot, has a self-balance body.
 - parts: camera, wifi, lcd ...
 

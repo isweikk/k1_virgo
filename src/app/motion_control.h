@@ -26,7 +26,7 @@ extern u8 BodyPosture;
 void MotorGetConstEuler(float *out_pitch, float *out_roll, float *out_yaw);
 
 void EXTI9_5_IRQHandler(void);
-int balance_UP(float Angle,float Mechanical_balance,float Gyro);
-int velocity(int encoder_left,int encoder_right);
-int turn(int encoder_left,int encoder_right,float gyro);
+int BalanceKeepUp(float pitch, float mid_val, float gyro);
+int VelocityKeep(int encoder_left,int encoder_right);
+int TurnKeep(int encoder_left, int encoder_right, float gyro);
 #endif

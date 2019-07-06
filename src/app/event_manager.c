@@ -18,18 +18,18 @@ void EventLoop(void)
     if (VoltageWaitTime > 1000) { //200ms 采集一次 过多采集没有意义
         VoltageWaitTime = 0;
         GetBatteryVolt();
-        float pitch, roll, yaw;
-        MotorGetConstEuler(&pitch, &roll, &yaw);
-        ulog("test0: %f, %f, %f", pitch, roll, yaw);
+        // float pitch, roll, yaw;
+        // MotorGetConstEuler(&pitch, &roll, &yaw);
+        // ulog("test0: %f, %f, %f", pitch, roll, yaw);
     //    short gyrox, gyroy, gyroz;
     //    MPU_Get_Gyroscope(&gyrox, &gyroy, &gyroz);
     //    ulog("test1: %d, %d, %d", gyrox, gyroy, gyroz);
         //ulog ("encoder: %d, %d", ReadEncoder(2), ReadEncoder(4));
-        OLED_Float(2, 2, pitch, 3);
-        OLED_Float(3, 2, roll, 3);
-        OLED_Float(4, 2, yaw, 3);
-		OLED_Num5(2, 5, -ReadEncoder(EmEncoderLeft));
-		OLED_Num5(2, 6, ReadEncoder(EmEncoderRight));
+        // OLED_Float(2, 2, pitch, 3);
+        // OLED_Float(3, 2, roll, 3);
+        // OLED_Float(4, 2, yaw, 3);
+		// OLED_Num5(2, 5, -ReadEncoder(EmEncoderLeft));
+		// OLED_Num5(2, 6, ReadEncoder(EmEncoderRight));
     }
 }
 
