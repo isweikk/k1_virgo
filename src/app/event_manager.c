@@ -8,6 +8,10 @@
 #include "general_api.h"
 #include "motion_control.h"
 
+u8    key=0;		//按键的键值
+u8    KEY_MODE=0;	//模式0,显示名字===HELLO BLIZ
+u8 DIS_STATE=255;	//用来实现只刷一次屏幕的变量	
+
 void EventLoop(void)
 {
     if (UltrasonicWaveWaitTime > 100) {				 //===100ms读取一次超声波的数据
