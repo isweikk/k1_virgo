@@ -12,6 +12,9 @@
 ## Hardware
 - the motion controller : stm32f103c8t6
 
+## Update
+[version](./version)
+
 ## TODO
 | TODO | STATUS |
 | --- | :---: |

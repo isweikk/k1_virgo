@@ -18,6 +18,7 @@ enum {
 enum EnumBodyPosture{
     EmPostureNone = 0,  //立正
     EmPostureFall,
+    EmPostureHang
 };
 
 extern u8 MoveDirection;

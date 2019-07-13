@@ -1,11 +1,11 @@
 /*
  * @Descripttion: motion controller
- * @version: v1.0.0
+ * @version: v1.0.1
  * @Author: Kevin
  * @Email: kkcoding@qq.com
  * @Date: 2019-06-15 02:37:14
  * @LastEditors: Kevin
- * @LastEditTime: 2019-07-06 23:39:48
+ * @LastEditTime: 2019-07-14 02:33:59
  */
 
 #include "motion_control.h"
@@ -82,18 +82,34 @@ void MotorGetConstEuler(float *out_pitch, float *out_roll, float *out_yaw)
 **************************************************************************/
 int MotorCheckErr(void)
 {
+    static int last_body_posture = EmPostureNone;
     float angle = pitch;
+    int ret = 0;
     //倾角大于40度，电池低电压，USB充电 == 关闭电机
-    if (angle < -40 || angle > 40 /*|| CheckBatteryLowPwr()
+    if (angle < -40 || angle > 40 || CheckBatteryLowPwr()/*
         || GetChargingStatus()*/) {
-        Motor1Pwm = 0;
-        Motor2Pwm = 0;
         BodyPosture = EmPostureFall;
-        return 1;
-    } else {
-        BodyPosture = EmPostureNone;
+    } else if (Motor1Pwm > 7000 && gyroy > -1000 && gyroy < 1000) {
+        //速度最大值，但加速度变化很小，则可能被悬空了
+        BodyPosture = EmPostureHang;
     }
-    return 0;
+    if (last_body_posture == EmPostureNone) {
+        if (BodyPosture != EmPostureNone) {
+            last_body_posture = BodyPosture;
+        }
+    }
+    if (last_body_posture == EmPostureFall) { //如果上次的姿态是倾倒，则等待姿态变为直立，再重启平衡环
+        if (pitch >= -5 && pitch <= 5) {
+            last_body_posture = BodyPosture = EmPostureNone;
+        } else {
+            Motor1Pwm = 0;
+            Motor2Pwm = 0;
+            ret = 1;
+        }
+    } else if (last_body_posture == EmPostureHang) {
+        last_body_posture = EmPostureNone;
+    }
+    return ret;
 }
 
 /**************************************************************************
