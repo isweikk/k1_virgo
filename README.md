@@ -13,7 +13,7 @@
 - the motion controller : stm32f103c8t6
 
 ## Update
-new version : v1.0.2
+Newest : v1.0.2  
 [version](./version)
 
 ## TODO
@@ -21,7 +21,7 @@ new version : v1.0.2
 | --- | :---: |
 | eye emotion | yes|
 | battery monitor | no |
-| Bluetooth handler | no |
+| Bluetooth handler | yes |
 | motion controller | no |
 
 ## About
