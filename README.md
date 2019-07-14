@@ -13,6 +13,7 @@
 - the motion controller : stm32f103c8t6
 
 ## Update
+new version : v1.0.2
 [version](./version)
 
 ## TODO
@@ -26,10 +27,10 @@
 ## About
 > Me
 
-    Author     : Kevin Wei
-    Profession : Embedded software engineer(Linux)
-    Industry   : AI, Robot, IOT
-    Email      : kkcoding@qq.com
+Author     : Kevin Wei  
+Profession : Embedded software engineer(Linux)  
+Industry   : AI, Robot, IOT  
+Email      : weikk90@163.com  
 
 > My Home - **[www.xweikk.com](http://www.xweikk.com:8080) (developing)**
 

@@ -14,9 +14,11 @@ void Usart3Init(u32 bound)
     //GPIO端口设置
     GPIO_InitTypeDef GPIO_InitStructure;
     USART_InitTypeDef USART_InitStructure;
+    NVIC_InitTypeDef NVIC_InitStructure;
 
     RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB, ENABLE);	//使能UGPIOB时钟
     RCC_APB1PeriphClockCmd(RCC_APB1Periph_USART3, ENABLE);	//使能USART3时钟
+    USART_DeInit(USART3);
     //USART3_TX  
     GPIO_InitStructure.GPIO_Pin = GPIO_Pin_10; //PB.10
     GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
@@ -28,6 +30,12 @@ void Usart3Init(u32 bound)
     GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;//浮空输入
     GPIO_Init(GPIOB, &GPIO_InitStructure);
 
+    //Usart3 NVIC 配置
+	NVIC_InitStructure.NVIC_IRQChannel = USART3_IRQn;
+	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 2 ;//抢占优先级3
+	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 3;		//子优先级3
+	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;			//IRQ通道使能
+	NVIC_Init(&NVIC_InitStructure);	//根据指定的参数初始化VIC寄存器
     //USART 初始化设置
     USART_InitStructure.USART_BaudRate = bound;//串口波特率
     USART_InitStructure.USART_WordLength = USART_WordLength_8b;//字长为8位数据格式
@@ -69,8 +77,9 @@ void USART3_IRQHandler(void)
 
 void Usart3SendByte(char byte)   //串口发送一个字节
 {
+    while(USART_GetFlagStatus(USART3, USART_FLAG_TXE) == RESET);
     USART_SendData(USART3, byte);        //通过库函数  发送数据
-    while(USART_GetFlagStatus(USART3,USART_FLAG_TC) != SET);  
+    while(USART_GetFlagStatus(USART3,USART_FLAG_TC) == RESET);  
     //等待发送完成。   检测 USART_FLAG_TC 是否置1；    //见库函数 P359 介绍
 }
 

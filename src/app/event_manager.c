@@ -19,9 +19,10 @@ void EventLoop(void)
         UltrasonicWaveDetect();
     }
 
-    if (VoltageWaitTime > 1000) { //200ms 采集一次 过多采集没有意义
+    if (VoltageWaitTime > 200) { //200ms 采集一次 过多采集没有意义
         VoltageWaitTime = 0;
         GetBatteryVolt();
+        OLED_Num2(2, 5, MoveDirection);
         // float pitch, roll, yaw;
         // MotorGetConstEuler(&pitch, &roll, &yaw);
         // ulog("test0: %f, %f, %f", pitch, roll, yaw);

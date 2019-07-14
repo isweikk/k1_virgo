@@ -1,11 +1,10 @@
 /*
  * @Descripttion: motion controller
- * @version: v1.0.1
  * @Author: Kevin
- * @Email: kkcoding@qq.com
+ * @Email: weikk90@163.com
  * @Date: 2019-06-15 02:37:14
  * @LastEditors: Kevin
- * @LastEditTime: 2019-07-14 02:33:59
+ * @LastEditTime: 2019-07-14 20:31:51
  */
 
 #include "motion_control.h"
@@ -22,6 +21,7 @@
         在MPU6050的采样频率设置中，设置成100HZ，即可保证6050的数据是10ms更新一次。
         读者可在imv_mpu.h文件第26行的宏定义进行修改(#define DEFAULT_MPU_HZ  (100))
 **************************************************************************/
+#define METHOD_GET_ANGLE   1   //获取角度的算法，1：四元数  2：卡尔曼  3：互补滤波
 //基础数据
 int EncoderLeftCnt = 0, EncoderRightCnt = 0;    //左右编码器的脉冲计数
 float pitch, roll, yaw; 					    //欧拉角(姿态角)
@@ -37,12 +37,15 @@ float MechanicalMidVal = 8.3; // 机械平衡中值。
 float BalanceUpKp = 300; 	 // 小车直立环KP
 float BalanceUpKd = 1;
 
-float VelocityKp = 80;
+float VelocityKp = 80;  //速度环
 float VelocityKi = 0.4;  //VelocityKp/200;
+
+float TurnKp = 1;  //转向环
+float TurnKd = 1/12;
 
 //
 u8 MoveDirection = EmBodyStop;
-u8 BodyPosture = EmPostureNone; //身体姿态
+u8 BodyPosture = EmPostureFall; //身体姿态
 
 int MotorCheckErr(void);
 
@@ -55,13 +58,10 @@ void EXTI9_5_IRQHandler(void)
         EncoderLeftCnt = -ReadEncoder(EmEncoderLeft);                          //===读取编码器的值，因为两个电机的旋转了180度的，所以对其中一个取反，保证输出极性一致
         EncoderRightCnt = ReadEncoder(EmEncoderRight);                          //===读取编码器的值
         
-        BalancePwm = BalanceKeepUp(pitch, MechanicalMidVal, gyroy);   //===平衡环PID控制	
-        VelocityPwm = VelocityKeep(EncoderLeftCnt, EncoderRightCnt);       //===速度环PID控制	 
-        // if (MoveDirection == EmBodyTurnLeft
-        //     || MoveDirection == EmBodyTrunRight)    
-        //     TurnPwm = turn(EncoderLeftCnt, EncoderRightCnt, gyroz);        //===转向环PID控制
-        // else
-        //     TurnPwm = (-0.5) * gyroz;
+        BalancePwm = BalanceKeepUp(pitch, MechanicalMidVal, gyroy);     //===平衡环PID控制	
+        VelocityPwm = VelocityKeep(EncoderLeftCnt, EncoderRightCnt);    //===速度环PID控制	 
+        TurnPwm = TurnKeep(EncoderLeftCnt, EncoderRightCnt, gyroz);     //===转向环PID控制
+
         Motor1Pwm = BalancePwm - VelocityPwm - TurnPwm;                 //===计算左轮电机最终PWM
         Motor2Pwm = BalancePwm - VelocityPwm + TurnPwm;                 //===计算右轮电机最终PWM
         MotorCheckErr();											//===检查异常
@@ -112,6 +112,10 @@ int MotorCheckErr(void)
     return ret;
 }
 
+int GetBodyStat(void)
+{
+    return BodyPosture;
+}
 /**************************************************************************
 函数功能：直立PD控制
 入口参数：角度、机械平衡角度（机械中值）、角速度
@@ -137,11 +141,11 @@ int VelocityKeep(int encoder_left, int encoder_right)
     static float movement;
 
     if (MoveDirection == EmBodyGoForward) {
-        movement = 20;
+        movement = 50;
     } else if (MoveDirection == EmBodyGoBackward) {
-        movement = -20;
+        movement = -50;
     } else if(UltrasonicWaveWarning()) {
-        movement = -10;		
+        movement = -20;		
     } else {	
         movement = 0;
     }
@@ -170,45 +174,63 @@ int VelocityKeep(int encoder_left, int encoder_right)
 入口参数：电机编码器的值、Z轴角速度
 返回  值：转向控制PWM
 **************************************************************************/
-int TurnKeep(int encoder_left,int encoder_right,float gyro)//转向控制
+int TurnKeep(int encoder_left, int encoder_right, float gyro)//转向控制
 {
-    static float Turn_Target,Turn,Encoder_temp,Turn_Convert=0.9,Turn_Count;
-    float Turn_Amplitude=44,Kp=20,Kd=0;     
-    //=============遥控左右旋转部分=======================//
+    static float turn_pwm = 0, turn_target = 0, encoder_temp, turn_convert = 3, turn_count;
+    static long turn_bias_integral;
+    int turn_bias, turn_amplitude = 1500/METHOD_GET_ANGLE + 800;
+
+    //这一部分主要是根据旋转前的速度调整速度的起始速度，增加小车的适应性
     if (MoveDirection == EmBodyTurnLeft
-        || MoveDirection == EmBodyTrunRight) {                    //这一部分主要是根据旋转前的速度调整速度的起始速度，增加小车的适应性
-        if(++Turn_Count == 1)
-            Encoder_temp = abs(encoder_left + encoder_right);      
-        Turn_Convert = 55/Encoder_temp;
-        if(Turn_Convert < 0.6)
-            Turn_Convert = 0.6;
-        if(Turn_Convert > 3)
-            Turn_Convert = 3;
+        || MoveDirection == EmBodyTrunRight) {
+        if(++turn_count == 1)
+            encoder_temp = abs(encoder_left + encoder_right);      
+        turn_convert = 2000/encoder_temp;
+        if(turn_convert < 3)
+            turn_convert = 3;
+        else if(turn_convert > 10)
+            turn_convert = 10;
     } else {
-        Turn_Convert = 0.9;
-        Turn_Count = 0;
-        Encoder_temp = 0;
-    }			
+        turn_convert = 3;
+        turn_count = 0;
+        encoder_temp = 0;
+    }
+
+    //速度缓冲
     if (MoveDirection == EmBodyTurnLeft) {
-        Turn_Target -= Turn_Convert;
+        turn_target += turn_convert;
     } else if (MoveDirection == EmBodyTrunRight) {
-        Turn_Target += Turn_Convert; 
+        turn_target -= turn_convert; 
     } else {
-        Turn_Target = 0;
+        turn_target = 0;
     }
-    if (Turn_Target > Turn_Amplitude) {
-        Turn_Target = Turn_Amplitude;    //===转向	速度限幅
+
+    //===转向	速度限幅
+    if (turn_target > turn_amplitude) {
+        turn_target = turn_amplitude;
+    } else if (turn_target < -turn_amplitude) {
+        turn_target = -turn_amplitude;
     }
-    if (Turn_Target < -Turn_Amplitude) {
-        Turn_Target = -Turn_Amplitude;
+
+    turn_bias = encoder_left - encoder_right;           //===计算转向速度偏差  
+    if (GetBodyStat() != EmPostureFall) {               //为了防止积分影响用户体验，只有电机开启的时候才开始积分
+        turn_bias_integral += turn_bias;                //转向速度偏差积分得到转向偏差（请认真理解这句话）
+        turn_bias_integral -= turn_target;              //获取遥控器数据
+    } else {
+        return 0;
     }
+    //===积分限幅
+    if(turn_bias_integral > 1800) {
+        turn_bias_integral = 1800;
+    } else if(turn_bias_integral < -1800) {
+        turn_bias_integral = -1800;	
+    }
+    //===结合Z轴陀螺仪进行PD控制
     if (MoveDirection == EmBodyGoForward
         || MoveDirection == EmBodyGoBackward) {
-        Kd=0.5;        
+        turn_pwm = turn_bias_integral*TurnKp;                              //转向的时候取消陀螺仪的纠正 有点模糊PID的思想
     } else {
-        Kd=0;   //转向的时候取消陀螺仪的纠正 有点模糊PID的思想
+        turn_pwm = turn_bias_integral*TurnKp + gyro*TurnKd;
     }
-    //=============转向PD控制器=======================//
-    Turn = -Turn_Target * Kp - gyro * Kd;                 //===结合Z轴陀螺仪进行PD控制
-    return Turn;
+    return turn_pwm;
 }
