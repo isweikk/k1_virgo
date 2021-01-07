@@ -1,3 +1,10 @@
+/*
+ * @Copyright: Copyright (C) 2021-2021 Kevin group. All rights reserved.
+ * @Description: file content
+ * @Author: Kevin
+ * @Email: weikaiup@163.com
+ * @Date: 2021-01-06
+ */
 /**
   ******************************************************************************
   * @file    adc.h
@@ -24,24 +31,12 @@
 extern "C" {
 #endif
 
-/* Includes ------------------------------------------------------------------*/
-#include "main.h"
+#include "typedef.h"
 
-/* USER CODE BEGIN Includes */
+uint32_t BspAdc1Init(void);
 
-/* USER CODE END Includes */
-
-extern ADC_HandleTypeDef hadc1;
-
-/* USER CODE BEGIN Private defines */
-
-/* USER CODE END Private defines */
-
-void MX_ADC1_Init(void);
-
-/* USER CODE BEGIN Prototypes */
-
-/* USER CODE END Prototypes */
+// 启动一次采样，存在转换时间，最小1us，设定1ms超时
+uint32_t BspAdc1GetValueOnce(void);
 
 #ifdef __cplusplus
 }

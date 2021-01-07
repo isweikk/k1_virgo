@@ -337,7 +337,7 @@
               <MiscControls></MiscControls>
               <Define>USE_HAL_DRIVER,STM32F103xB</Define>
               <Undefine></Undefine>
-              <IncludePath>../../platform/STM32F1xx_HAL_Driver/Inc;../../platform/STM32F1xx_HAL_Driver/Inc/Legacy;../../platform/CMSIS/Device/ST/STM32F1xx/Include;../../platform/CMSIS/Include;../../platform/CMSIS_RTOS_V2;../../freertos/include;../../freertos/portable/RVDS/ARM_CM3;../../user;../../user/bsp</IncludePath>
+              <IncludePath>../../platform/STM32F1xx_HAL_Driver/Inc;../../platform/STM32F1xx_HAL_Driver/Inc/Legacy;../../platform/CMSIS/Device/ST/STM32F1xx/Include;../../platform/CMSIS/Include;../../platform/CMSIS_RTOS_V2;../../freertos/include;../../freertos/portable/RVDS/ARM_CM3;../../user;../../user/bsp;../../user/config;../../</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -387,9 +387,14 @@
               <FilePath>..\..\user\app\main.c</FilePath>
             </File>
             <File>
-              <FileName>freertos.c</FileName>
+              <FileName>face.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\user\app\freertos.c</FilePath>
+              <FilePath>..\..\user\app\face.c</FilePath>
+            </File>
+            <File>
+              <FileName>os_task.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\user\app\os_task.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -407,16 +412,6 @@
               <FilePath>..\..\user\bsp\gpio.c</FilePath>
             </File>
             <File>
-              <FileName>stm32f1xx_hal_msp.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\user\bsp\stm32f1xx_hal_msp.c</FilePath>
-            </File>
-            <File>
-              <FileName>stm32f1xx_hal_timebase_tim.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\user\bsp\stm32f1xx_hal_timebase_tim.c</FilePath>
-            </File>
-            <File>
               <FileName>stm32f1xx_it.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\user\bsp\stm32f1xx_it.c</FilePath>
@@ -430,6 +425,16 @@
               <FileName>usart.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\user\bsp\usart.c</FilePath>
+            </File>
+            <File>
+              <FileName>bsp.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\user\bsp\bsp.c</FilePath>
+            </File>
+            <File>
+              <FileName>sys_timebase.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\user\bsp\sys_timebase.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -800,6 +805,31 @@
               <FileName>stm32f1xx_ll_utils.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\platform\STM32F1xx_HAL_Driver\Src\stm32f1xx_ll_utils.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>user/components</GroupName>
+          <Files>
+            <File>
+              <FileName>dev_oled.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\user\components\oled\dev_oled.c</FilePath>
+            </File>
+            <File>
+              <FileName>font_dot.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\user\components\oled\font_dot.c</FilePath>
+            </File>
+            <File>
+              <FileName>dev_misc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\user\components\misc\dev_misc.c</FilePath>
+            </File>
+            <File>
+              <FileName>console.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\user\components\com\console.c</FilePath>
             </File>
           </Files>
         </Group>

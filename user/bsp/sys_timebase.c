@@ -1,4 +1,3 @@
-/* USER CODE BEGIN Header */
 /**
   ******************************************************************************
   * @file    stm32f1xx_hal_timebase_TIM.c
@@ -16,7 +15,6 @@
   *
   ******************************************************************************
   */
-/* USER CODE END Header */
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f1xx_hal.h"
@@ -106,6 +104,14 @@ void HAL_ResumeTick(void)
 {
   /* Enable TIM3 Update interrupt */
   __HAL_TIM_ENABLE_IT(&htim3, TIM_IT_UPDATE);
+}
+
+/*
+ * @brief This function handles TIM3 global interrupt.
+ */
+void TIM3_IRQHandler(void)
+{
+    HAL_TIM_IRQHandler(&htim3);
 }
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

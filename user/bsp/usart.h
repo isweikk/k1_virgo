@@ -1,22 +1,11 @@
-/**
-  ******************************************************************************
-  * @file    usart.h
-  * @brief   This file contains all the function prototypes for
-  *          the usart.c file
-  ******************************************************************************
-  * @attention
-  *
-  * <h2><center>&copy; Copyright (c) 2021 STMicroelectronics.
-  * All rights reserved.</center></h2>
-  *
-  * This software component is licensed by ST under Ultimate Liberty license
-  * SLA0044, the "License"; You may not use this file except in compliance with
-  * the License. You may obtain a copy of the License at:
-  *                             www.st.com/SLA0044
-  *
-  ******************************************************************************
-  */
-/* Define to prevent recursive inclusion -------------------------------------*/
+/*
+ * @Copyright: Copyright (C) 2021-2021 Kevin group. All rights reserved.
+ * @Description: file content
+ * @Author: Kevin
+ * @Email: weikaiup@163.com
+ * @Date: 2021-01-06
+ */
+
 #ifndef __USART_H__
 #define __USART_H__
 
@@ -24,33 +13,20 @@
 extern "C" {
 #endif
 
-/* Includes ------------------------------------------------------------------*/
-#include "main.h"
+#include "stm32f1xx_hal.h"
+#include "stm32f1xx_hal_usart.h"
+#include "typedef.h"
 
-/* USER CODE BEGIN Includes */
+UART_HandleTypeDef *BspGetUsart1Hdl(void);
+UART_HandleTypeDef *BspGetUsart2Hdl(void);
+UART_HandleTypeDef *BspGetUsart3Hdl(void);
 
-/* USER CODE END Includes */
-
-extern UART_HandleTypeDef huart1;
-extern UART_HandleTypeDef huart2;
-extern UART_HandleTypeDef huart3;
-
-/* USER CODE BEGIN Private defines */
-
-/* USER CODE END Private defines */
-
-void MX_USART1_UART_Init(void);
-void MX_USART2_UART_Init(void);
-void MX_USART3_UART_Init(void);
-
-/* USER CODE BEGIN Prototypes */
-
-/* USER CODE END Prototypes */
+uint32_t BspUsart1Init(void);
+uint32_t BspUsart2Init(void);
+uint32_t BspUsart3Init(void);
 
 #ifdef __cplusplus
 }
 #endif
 
 #endif /* __USART_H__ */
-
-/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
