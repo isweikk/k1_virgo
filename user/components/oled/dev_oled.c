@@ -39,10 +39,6 @@
 #define I2C_SDA_CLR() HAL_GPIO_WritePin(GPIOB, GPIO_PIN_9, GPIO_PIN_RESET)
 #define I2C_SDA_SET() HAL_GPIO_WritePin(GPIOB, GPIO_PIN_9, GPIO_PIN_SET)
 
-#define OLED_IIC_CMD  0	//写命令
-#define OLED_IIC_DATA 1	//写数据
-
-
 void I2cStart()
 {
     I2C_SCL_SET() ;

@@ -8,7 +8,7 @@
 # Robot - K1 Virgo
 > The project is a desktop robot, Its named K1, and nickname is Virgo.
 - He is a very small robot, has a self-balance body.
-- parts: motion, lcd ...
+- parts: motion, lcd, ble...
 
 ## Show
 
@@ -20,17 +20,17 @@
 - the motion controller : stm32f103c8t6
 
 ## Update
-Newest : v2.0
+Newest : v2.1
 [version](./version)
 
 ## TODO
 | TODO | STATUS |
 | --- | :---: |
-| eye emotion | no|
-| battery monitor | no |
+| eye emotion | yes |
+| battery monitor | yes |
 | Bluetooth handler | no |
 | motion controller | no |
-| motion controller | no |
+| mini programs | no |
 
 ## About
 > Me
@@ -40,7 +40,7 @@ Profession : Embedded software engineer(Linux)
 Industry   : AI, Robot, IOT  
 Email      : weikaiup@163.com  
 
-> My Home - **[www.xweikk.com](http://www.xweikk.com:8080) (developing)**
+<!-- > My Home - **[www.xweikk.com](http://www.xweikk.com:8080) (developing)** -->
 
 [B站展示视频](https://space.bilibili.com/427666063)
 

@@ -9,15 +9,6 @@
 #ifndef __CONSOLE_H__
 #define __CONSOLE_H__
 
-#define DEBUG   1
-
-#define ulog(format, ...) printf("> %-4d: "format"\r\n", __LINE__, ##__VA_ARGS__)
-#if DEBUG
-#define ulogd(format, ...) printf("> %-4d: "format"\r\n", __LINE__, ##__VA_ARGS__)
-#else
-#define ulogd(format, ...)
-#endif
-
 void ConsoleInit(void);
 
 #endif

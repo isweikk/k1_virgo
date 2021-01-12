@@ -1,3 +1,7 @@
+version_2.1 (20210113)
+----------------
+ - 增加 printf，face，button，mpu6050
+
 version_2.0 (20210106)
 ----------------
  - 重构，基于freertos + stm32 cubeMX，调试点灯成功

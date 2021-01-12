@@ -337,7 +337,7 @@
               <MiscControls></MiscControls>
               <Define>USE_HAL_DRIVER,STM32F103xB</Define>
               <Undefine></Undefine>
-              <IncludePath>../../platform/STM32F1xx_HAL_Driver/Inc;../../platform/STM32F1xx_HAL_Driver/Inc/Legacy;../../platform/CMSIS/Device/ST/STM32F1xx/Include;../../platform/CMSIS/Include;../../platform/CMSIS_RTOS_V2;../../freertos/include;../../freertos/portable/RVDS/ARM_CM3;../../user;../../user/bsp;../../user/config;../../</IncludePath>
+              <IncludePath>../../platform/STM32F1xx_HAL_Driver/Inc;../../platform/STM32F1xx_HAL_Driver/Inc/Legacy;../../platform/CMSIS/Device/ST/STM32F1xx/Include;../../platform/CMSIS/Include;../../platform/CMSIS_RTOS_V2;../../freertos/include;../../freertos/portable/RVDS/ARM_CM3;../../user;../../user/bsp;../../user/config;../../;../../user/components/motor/mpu6050;../../user/components/motor/mpu6050/eMPL</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -830,6 +830,31 @@
               <FileName>console.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\user\components\com\console.c</FilePath>
+            </File>
+            <File>
+              <FileName>util_sys.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\user\components\util\util_sys.c</FilePath>
+            </File>
+            <File>
+              <FileName>mpu_iic.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\user\components\motor\mpu6050\mpu_iic.c</FilePath>
+            </File>
+            <File>
+              <FileName>mpu6050.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\user\components\motor\mpu6050\mpu6050.c</FilePath>
+            </File>
+            <File>
+              <FileName>inv_mpu.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\user\components\motor\mpu6050\eMPL\inv_mpu.c</FilePath>
+            </File>
+            <File>
+              <FileName>inv_mpu_dmp_motion_driver.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\user\components\motor\mpu6050\eMPL\inv_mpu_dmp_motion_driver.c</FilePath>
             </File>
           </Files>
         </Group>

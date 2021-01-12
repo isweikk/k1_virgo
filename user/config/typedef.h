@@ -21,6 +21,8 @@
 	
 #define RET_OK 0
 #define RET_ERR (uint32_t)-1
+#define RET_UINT8_ERR (uint8_t)-1
+
 #define true 1
 #define false 0
 

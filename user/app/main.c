@@ -13,9 +13,9 @@ void OsTaskRun(void);
 
 void ErrorHdl(void)
 {
-  __disable_irq();
-  while (1) {
-  }
+    __disable_irq();
+    while (1) {
+    }
 }
 
 /**
@@ -27,11 +27,7 @@ int main(void)
     BspInit();
     ConsoleInit();
 
-    /* Init scheduler */
-    osKernelInitialize(); /* Call init function for freertos objects (in freertos.c) */
     OsTaskRun();
-    /* Start scheduler */
-    osKernelStart();
 
     /* We should never get here as control is now taken by the scheduler */
     while (1) {

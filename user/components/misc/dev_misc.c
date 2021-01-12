@@ -57,7 +57,7 @@ void LedBlink(uint16_t lightMs, uint16_t darkMs)
     static uint32_t lastTime = 0;
     uint32_t nowTime = osKernelGetTickCount() * 1000 / osKernelGetTickFreq();  // runtime，单位毫秒
 
-    if (lightMs == 0 && darkMs == 0) {
+    if (lightMs + darkMs == 0) {
         LedSet(false);
         return;
     }

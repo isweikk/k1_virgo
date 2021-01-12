@@ -14,6 +14,8 @@
 
 #include "app/face.h"
 #include "components/misc/dev_misc.h"
+#include "components/util/util_sys.h"
+#include "components/motor/mpu6050/mpu6050.h"
 
 osThreadId_t defaultTaskHandle;
 const osThreadAttr_t defaultTask_attributes = {
@@ -36,6 +38,13 @@ const osThreadAttr_t myMiscTaskAttr = {
     .stack_size = 128 * 4
 };
 
+osThreadId_t myMotionTaskHdl;
+const osThreadAttr_t myMotionTaskAttr = {
+    .name = "myMotionTask",
+    .priority = (osPriority_t)osPriorityHigh,
+    .stack_size = 128 * 4
+};
+
 osMessageQueueId_t myQueue01Handle;
 const osMessageQueueAttr_t myQueue01_attributes = {
     .name = "myQueue01"
@@ -44,50 +53,65 @@ const osMessageQueueAttr_t myQueue01_attributes = {
 void StartDefaultTask(void *argument);
 void FaceTask(void *argument);
 void MiscTask(void *argument);
+void MotionTask(void *argument);
 
 void OsTaskRun(void)
 {
+    /* Init scheduler */
+    osKernelInitialize(); /* Call init function for freertos objects (in freertos.c) */
+
     myQueue01Handle = osMessageQueueNew(16, sizeof(uint16_t), &myQueue01_attributes);
 
     defaultTaskHandle = osThreadNew(StartDefaultTask, NULL, &defaultTask_attributes);
     if (defaultTaskHandle == NULL) {
-        printf("defaultTask fail\r\n");
+        uloge("defaultTask fail");
     }
 
     myFaceTaskHdl = osThreadNew(FaceTask, NULL, &myFaceTaskAttr);
     if (myFaceTaskHdl == NULL) {
-        printf("FaceTask fail\r\n");
+        uloge("FaceTask fail");
     }
 
     myMiscTaskHdl = osThreadNew(MiscTask, NULL, &myMiscTaskAttr);
     if (myMiscTaskHdl == NULL) {
-        printf("MiscTask fail\r\n");
+        uloge("MiscTask fail");
     }
+
+    myMotionTaskHdl = osThreadNew(MotionTask, NULL, &myMotionTaskAttr);
+    if (myMotionTaskHdl == NULL) {
+        uloge("MotionTask fail");
+    }
+    ulog("Create all tasks OK");
+
+    osKernelStart();
 }
 
 void StartDefaultTask(void *argument)
 {
-    printf("DefaultTask start\r\n");
+    ulog("DefaultTask start");
+    
     for (;;) {
         if (IsBatCharging() == CHARGING_ON) {
-            printf("is charging\r\n");
+            // ulog("is charging");
         }
-        printf("Battery : %dV\r\n", GetBatteryLevel());
-        osDelay(1000);
+        // ulog("Battery : %dV", GetBatteryLevel());
+        DelayMs(1000);
     }
+    ulog("DefaultTask exit");
 }
 
 void FaceTask(void *argument)
 {
-    printf("FaceTask start\r\n");
+    ulog("FaceTask start");
     task_screen(NULL);
+    ulog("FaceTask exit");
 }
 
 void MiscTask(void *argument)
 {
     uint16_t ledTim = 0;
 
-    printf("MiscTask start\r\n");
+    ulog("MiscTask start");
     for (;;) {
         // 按键事件
         if (KeyScan() == KEY_ONE_CLICK) {
@@ -103,4 +127,23 @@ void MiscTask(void *argument)
         GetBatteryLevel();
         osDelay(10);
     }
+    ulog("MiscTask exit");
+}
+
+void MotionTask(void *argument)
+{
+    ulog("MotionTask start");
+    MPU_Init();
+    while (1) {
+        if (g_mpu6050Flag) {
+            float pitch, roll, yaw; 					    //欧拉角(姿态角)
+            short gyrox, gyroy, gyroz;						//陀螺仪原始数据
+            mpu_dmp_get_data(&pitch, &roll, &yaw);					//===得到欧拉角（姿态角）的数据
+            MPU_GetGyroscope(&gyrox, &gyroy, &gyroz);				//===得到陀螺仪数据
+            ulogd("inv: %f, %f, %f, %d, %d, %d", pitch, roll, yaw, gyrox, gyroy, gyroz);
+            g_mpu6050Flag = 0;
+        }
+        osDelay(1);
+    }
+    ulog("MotionTask exit");
 }
