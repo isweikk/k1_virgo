@@ -856,6 +856,11 @@
               <FileType>1</FileType>
               <FilePath>..\..\user\components\motor\mpu6050\eMPL\inv_mpu_dmp_motion_driver.c</FilePath>
             </File>
+            <File>
+              <FileName>motor.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\user\components\motor\motor.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

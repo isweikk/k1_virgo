@@ -14,7 +14,6 @@
 #define DEBUG   1
 
 #define ulog(format, ...) printf("[%-15.15s][%4d][I]: "format"\r\n", __func__, __LINE__, ##__VA_ARGS__)
-#define ulogw(format, ...) printf("[%-15.15s][%4d][W]: "format"\r\n", __func__, __LINE__, ##__VA_ARGS__)
 #define uloge(format, ...) printf("[%-15.15s][%4d][E]: "format"\r\n", __func__, __LINE__, ##__VA_ARGS__)
 
 #if DEBUG

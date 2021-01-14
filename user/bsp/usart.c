@@ -93,7 +93,6 @@ void HAL_UART_MspInit(UART_HandleTypeDef* uartHandle)
         /* USART1 interrupt Init */
         HAL_NVIC_SetPriority(USART1_IRQn, 5, 0);
         HAL_NVIC_EnableIRQ(USART1_IRQn);
-
     } else if (uartHandle->Instance == USART2) {
         /* USART2 clock enable */
         __HAL_RCC_USART2_CLK_ENABLE();
@@ -116,7 +115,6 @@ void HAL_UART_MspInit(UART_HandleTypeDef* uartHandle)
         /* USART2 interrupt Init */
         HAL_NVIC_SetPriority(USART2_IRQn, 5, 0);
         HAL_NVIC_EnableIRQ(USART2_IRQn);
-
     } else if (uartHandle->Instance == USART3) {
         /* USART3 clock enable */
         __HAL_RCC_USART3_CLK_ENABLE();

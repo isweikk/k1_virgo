@@ -16,7 +16,7 @@ uint8_t MPU_Init(void)
     I2C_Init();
     if (mpu_dmp_init() != RET_OK) {
         ulog("mpu6050 init fail");
-        return RET_UINT8_ERR;
+        return RET_ERR;
     }
     ulog("mpu6050 init OK");
     return RET_OK;

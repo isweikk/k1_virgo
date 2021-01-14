@@ -1,22 +1,10 @@
-/**
-  ******************************************************************************
-  * @file    tim.h
-  * @brief   This file contains all the function prototypes for
-  *          the tim.c file
-  ******************************************************************************
-  * @attention
-  *
-  * <h2><center>&copy; Copyright (c) 2021 STMicroelectronics.
-  * All rights reserved.</center></h2>
-  *
-  * This software component is licensed by ST under Ultimate Liberty license
-  * SLA0044, the "License"; You may not use this file except in compliance with
-  * the License. You may obtain a copy of the License at:
-  *                             www.st.com/SLA0044
-  *
-  ******************************************************************************
-  */
-/* Define to prevent recursive inclusion -------------------------------------*/
+/*
+ * @Copyright: Copyright (C) 2021-2021 Kevin group. All rights reserved.
+ * @Description: the configuration of the timers.
+ * @Author: Kevin
+ * @Email: weikaiup@163.com
+ * @Date: 2021-01-06
+ */
 #ifndef __TIM_H__
 #define __TIM_H__
 
@@ -25,24 +13,20 @@ extern "C" {
 #endif
 
 #include "stm32f1xx_hal.h"
-#include "stm32f1xx_hal_conf.h"
+#include "stm32f1xx_hal_tim.h"
 
-extern TIM_HandleTypeDef htim1;
-extern TIM_HandleTypeDef htim2;
-extern TIM_HandleTypeDef htim4;
+#include "typedef.h"
 
-void BspTIM1_Init(void);
-void BspTIM2_Init(void);
-void BspTIM4_Init(void);
+uint32_t BspTim1Init(void);
+uint32_t BspTim2Init(void);
+uint32_t BspTim4Init(void);
 
-void HAL_TIM_MspPostInit(TIM_HandleTypeDef *htim);
-
-
+TIM_HandleTypeDef *GetHandleOfTim1(void);
+TIM_HandleTypeDef *GetHandleOfTim2(void);
+TIM_HandleTypeDef *GetHandleOfTim4(void);
 
 #ifdef __cplusplus
 }
 #endif
 
 #endif /* __TIM_H__ */
-
-/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

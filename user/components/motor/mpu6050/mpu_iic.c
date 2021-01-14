@@ -1,6 +1,6 @@
 /*
  * @Copyright: Copyright (C) 2021-2021 Kevin group. All rights reserved.
- * @Description: the iic driver of the MPU6050 chip
+ * @Description: IIC驱动，已经去除MPU6050部分，可用于所有IIC设备
  * @Author: Kevin
  * @Email: weikaiup@163.com
  * @Date: 2021-01-08
@@ -88,7 +88,7 @@ uint8_t I2C_WaitAck(void)
             I2C_SCL_SET(I2C_IO_LOW);
             I2C_SetSdaDir(1);
             I2C_Stop();
-            return RET_UINT8_ERR;
+            return RET_ERR;
         }
     }
     I2C_SCL_SET(I2C_IO_LOW);
@@ -173,20 +173,20 @@ uint8_t I2C_SendLongData(uint8_t addr, uint8_t reg, uint8_t len, uint8_t *buf)
     I2C_SendByte((addr << 1) | 0);  // 发送器件地址+写命令
     if (I2C_WaitAck() != RET_OK) {
         I2C_Stop();
-        return RET_UINT8_ERR;
+        return RET_ERR;
     }
 
     I2C_SendByte(reg);  // 写寄存器地址
     if (I2C_WaitAck() != RET_OK) {
         I2C_Stop();
-        return RET_UINT8_ERR;
+        return RET_ERR;
     }
 
     for (i = 0; i < len; i++) {
         I2C_SendByte(buf[i]);  // 发送数据
         if (I2C_WaitAck() != RET_OK) {
             I2C_Stop();
-            return RET_UINT8_ERR;
+            return RET_ERR;
         }
     }
     I2C_Stop();
@@ -205,20 +205,20 @@ uint8_t I2C_ReadLongData(uint8_t addr, uint8_t reg, uint8_t len, uint8_t *buf)
     I2C_SendByte((addr << 1) | 0);  // 发送器件地址+写命令
     if (I2C_WaitAck() != RET_OK) {
         I2C_Stop();
-        return RET_UINT8_ERR;
+        return RET_ERR;
     }
 
     I2C_SendByte(reg);  // 写寄存器地址
     if (I2C_WaitAck() != RET_OK) {
         I2C_Stop();
-        return RET_UINT8_ERR;
+        return RET_ERR;
     }
 
     I2C_Start();
     I2C_SendByte((addr << 1) | 1);  // 发送器件地址+读命令
     if (I2C_WaitAck() != RET_OK) {
         I2C_Stop();
-        return RET_UINT8_ERR;
+        return RET_ERR;
     }
 
     while (len) {

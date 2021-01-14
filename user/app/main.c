@@ -24,9 +24,8 @@ void ErrorHdl(void)
  */
 int main(void)
 {
+    ConsoleInit();  // 初始化控制台结构，优先创建，可让printf提前生效
     BspInit();
-    ConsoleInit();
-
     OsTaskRun();
 
     /* We should never get here as control is now taken by the scheduler */

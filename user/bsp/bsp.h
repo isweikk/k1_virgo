@@ -11,6 +11,7 @@
 
 #include "typedef.h"
 
+uint32_t SystemClock_Config(void);
 uint32_t BspInit(void);
 
 #endif /* USER_BSP_H */

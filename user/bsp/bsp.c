@@ -14,27 +14,23 @@
 #include "tim.h"
 #include "usart.h"
 #include "gpio.h"
-
-uint32_t SystemClock_Config(void);
+#include "components/util/util_sys.h"
 
 uint32_t BspInit(void)
 {
-    uint32_t ret;
-
     HAL_Init();
-    ret = SystemClock_Config();
-    if (ret != RET_OK) {
-        return ret;
-    }
+    SystemClock_Config();
 
+    BspUsart1Init();    // 最先初始化，保证日志输出
+    ulog("BspInit start");
     BspGpioInit();
     BspAdc1Init();
-    BspTIM1_Init();
-    BspTIM2_Init();
-    BspTIM4_Init();
-    BspUsart1Init();
+    BspTim1Init();
+    BspTim2Init();
+    BspTim4Init();
     BspUsart2Init();
     BspUsart3Init();
+    ulog("BspInit OK");
     return RET_OK;
 }
 
