@@ -7,7 +7,7 @@
  */
 #include "mpu6050.h"
 #include "mpu_iic.h"
-#include "components/motor/mpu6050/eMPL/inv_mpu.h"
+#include "components/motion/mpu6050/eMPL/inv_mpu.h"
 #include "components/util/util_sys.h"
 
 // 初始化MPU6050
@@ -69,10 +69,4 @@ uint8_t MPU_GetAccelerometer(short *ax, short *ay, short *az)
         *az = ((uint16_t)buf[4] << 8) | buf[5];
     }
     return res;
-}
-
-uint16_t g_mpu6050Flag = 0;
-void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
-{
-    g_mpu6050Flag = 1;
 }

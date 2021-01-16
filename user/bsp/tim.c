@@ -220,11 +220,6 @@ void HAL_TIM_Encoder_MspInit(TIM_HandleTypeDef* tim_encoderHandle)
         GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
         GPIO_InitStruct.Pull = GPIO_NOPULL;
         HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
-
-        /* TIM2 interrupt Init */
-        HAL_NVIC_SetPriority(TIM2_IRQn, 5, 0);
-        HAL_NVIC_EnableIRQ(TIM2_IRQn);
-
     } else if (tim_encoderHandle->Instance == TIM4) {
         /* TIM4 clock enable */
         __HAL_RCC_TIM4_CLK_ENABLE();
@@ -238,10 +233,6 @@ void HAL_TIM_Encoder_MspInit(TIM_HandleTypeDef* tim_encoderHandle)
         GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
         GPIO_InitStruct.Pull = GPIO_NOPULL;
         HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
-
-        /* TIM4 interrupt Init */
-        HAL_NVIC_SetPriority(TIM4_IRQn, 5, 0);
-        HAL_NVIC_EnableIRQ(TIM4_IRQn);
     }
 }
 
@@ -264,10 +255,6 @@ void HAL_TIM_Encoder_MspDeInit(TIM_HandleTypeDef* tim_encoderHandle)
         PA1     ------> TIM2_CH2
         */
         HAL_GPIO_DeInit(GPIOA, GPIO_PIN_0 | GPIO_PIN_1);
-
-        /* TIM2 interrupt Deinit */
-        HAL_NVIC_DisableIRQ(TIM2_IRQn);
-
     } else if (tim_encoderHandle->Instance == TIM4) {
         /* Peripheral clock disable */
         __HAL_RCC_TIM4_CLK_DISABLE();
@@ -277,9 +264,6 @@ void HAL_TIM_Encoder_MspDeInit(TIM_HandleTypeDef* tim_encoderHandle)
         PB7     ------> TIM4_CH2
         */
         HAL_GPIO_DeInit(GPIOB, GPIO_PIN_6 | GPIO_PIN_7);
-
-        /* TIM4 interrupt Deinit */
-        HAL_NVIC_DisableIRQ(TIM4_IRQn);
     }
 }
 

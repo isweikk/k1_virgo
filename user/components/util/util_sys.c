@@ -22,3 +22,10 @@ void DelayUs(uint32_t us)
         i--;
     }
 }
+
+uint32_t GetRuntimeMs(void)
+{
+    uint64_t time = osKernelGetTickCount();
+    time = time * 1000 / osKernelGetTickFreq();
+    return (uint32_t)time;
+}

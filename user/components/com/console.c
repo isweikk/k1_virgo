@@ -146,10 +146,10 @@
 #define RX_ASCII_ROLL_BACK 0X0D // \r
 #define RX_ASCII_NEW_LINE  0X0A // \n
 
-UART_HandleTypeDef *g_uartHdl = NULL;
-uint8_t g_rxBuf[CONSOLE_BUFF_SIZE] = {0};
-uint8_t g_rxOneByte = 0;    // 用于HAL层中断接收缓存，1个字节
-uint16_t g_rxFlag = 0;
+static UART_HandleTypeDef *g_uartHdl = NULL;
+static uint8_t g_rxBuf[CONSOLE_BUFF_SIZE] = {0};
+static uint8_t g_rxOneByte = 0;    // 用于HAL层中断接收缓存，1个字节
+static uint16_t g_rxFlag = 0;
 
 uint8_t IsRxComplete(void)
 {

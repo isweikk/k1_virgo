@@ -24,5 +24,6 @@
 
 void DelayMs(uint32_t ms);
 void DelayUs(uint32_t us);
+uint32_t GetRuntimeMs(void);    // 最长运行49天
 
 #endif  // UTIL_SYS_H

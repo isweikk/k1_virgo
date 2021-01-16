@@ -71,7 +71,7 @@ void MotorSetPwm(uint8_t motor, int16_t pwm)
         ulogd("hdlTim1 is NULL");
         return;
     }
-    ulogd("motor=%d, pwm=%d", motor, pwm);
+    // ulogd("motor=%d, pwm=%d", motor, pwm);
     if (motor == MOTOR_LEFT) {
         __HAL_TIM_SET_COMPARE(hdlTim1, TIM_CHANNEL_4, pwm);    // 修改比较值，即占空比
     } else {
@@ -82,7 +82,7 @@ void MotorSetPwm(uint8_t motor, int16_t pwm)
 // 设置电机方向
 void MotorSetDirect(uint8_t motor, uint8_t direct)
 {
-    ulogd("motor=%d, direct=%d", motor, direct);
+    // ulogd("motor=%d, direct=%d", motor, direct);
     switch (direct) {
         case MOTOR_STOP:
         case MOTOR_BRAKE:
@@ -122,10 +122,10 @@ void EncoderInit(void)
         uloge("Get the tim handle fail");
         return;
     }
+    HAL_TIM_Encoder_Start(hdlTim2, TIM_CHANNEL_ALL);
+    HAL_TIM_Encoder_Start(hdlTim4, TIM_CHANNEL_ALL);
     __HAL_TIM_SET_COUNTER(hdlTim2, 0);
     __HAL_TIM_SET_COUNTER(hdlTim4, 0);
-    HAL_TIM_Encoder_Start_IT(hdlTim2, TIM_CHANNEL_1);
-    HAL_TIM_Encoder_Start_IT(hdlTim4, TIM_CHANNEL_1);
 }
 
 // 初始化电机相关参数
@@ -146,32 +146,31 @@ void MotorInit(void)
 }
 
 /*
- * 函数功能：单位时间读取编码器计数
+ * 函数功能：单位时间读取编码器计数，返回值有符号
  * 入口参数：传感器序号
  * 返回  值：速度值
  */
-uint16_t GetEncoderVal(uint8_t encoder)
+int16_t GetEncoderVal(uint8_t encoder)
 {
     if ((hdlTim2 == NULL || hdlTim4 == NULL)) {
         ulogd("hdlTim2 or hdlTim4 is NULL");
         return 0;
     }
-    int timCnt;
+    int16_t timCnt;
     switch(encoder) {
         case ENCODER_LEFT:
-            timCnt = __HAL_TIM_GET_COUNTER(hdlTim2); // 编码器计数值
+            timCnt = __HAL_TIM_GET_COUNTER(hdlTim2); // 编码器的计数根据旋转方向而增减，如果先减，寄存器会翻转，是负数。
             __HAL_TIM_SET_COUNTER(hdlTim2, 0);
-            __HAL_TIM_IS_TIM_COUNTING_DOWN(hdlTim2); // 编码器方向
             break;
         case ENCODER_RIGHT:
             timCnt = __HAL_TIM_GET_COUNTER(hdlTim4);
             __HAL_TIM_SET_COUNTER(hdlTim4, 0);
-            __HAL_TIM_IS_TIM_COUNTING_DOWN(hdlTim4);
             break;
         default:
+            ulogd("3 timcnt=%d", timCnt);
             timCnt=0;
     }
-    return (uint16_t)timCnt;
+    return timCnt;
 }
 
 uint8_t GetEncoderDir(uint8_t encoder)

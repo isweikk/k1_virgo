@@ -30,7 +30,7 @@ enum EncoderNum {
 };
 
 // 读取编码器的值，方向
-uint16_t GetEncoderVal(uint8_t encoder);
+int16_t GetEncoderVal(uint8_t encoder);
 uint8_t GetEncoderDir(uint8_t encoder);
 
 void MotorInit(void);

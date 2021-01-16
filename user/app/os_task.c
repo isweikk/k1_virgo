@@ -16,8 +16,7 @@
 #include "components/misc/dev_misc.h"
 #include "components/util/util_sys.h"
 #include "components/com/console.h"
-#include "components/motor/mpu6050/mpu6050.h"
-#include "components/motor/motor.h"
+#include "components/motion/controller.h"
 
 osThreadId_t defaultTaskHandle;
 const osThreadAttr_t defaultTask_attributes = {
@@ -109,7 +108,6 @@ void FaceTask(void *argument)
     ulog("FaceTask exit");
 }
 
-uint8_t g_pwmFlag = false;
 void MiscTask(void *argument)
 {
     uint16_t ledTim = 0;
@@ -118,7 +116,6 @@ void MiscTask(void *argument)
     for (;;) {
         // 按键事件
         if (KeyScan() == KEY_ONE_CLICK) {
-            g_pwmFlag = true;
             ledTim += 100;
             if (ledTim == 3000) {
                 ledTim = 0;
@@ -132,29 +129,4 @@ void MiscTask(void *argument)
         osDelay(10);
     }
     ulog("MiscTask exit");
-}
-
-void MotionTask(void *argument)
-{
-    ulog("MotionTask start");
-
-    MPU_Init();
-    MotorInit();
-    while (1) {
-        if (g_pwmFlag == true) {
-            ulogd("MotorSetSpeed");
-            MotorSetSpeed(MOTOR_LEFT, 3000);
-            g_pwmFlag = false;
-        }
-        if (g_mpu6050Flag) {
-            float pitch, roll, yaw; 					    //欧拉角(姿态角)
-            short gyrox, gyroy, gyroz;						//陀螺仪原始数据
-            mpu_dmp_get_data(&pitch, &roll, &yaw);					//===得到欧拉角（姿态角）的数据
-            MPU_GetGyroscope(&gyrox, &gyroy, &gyroz);				//===得到陀螺仪数据
-            // ulogd("inv: %f, %f, %f, %d, %d, %d", pitch, roll, yaw, gyrox, gyroy, gyroz);
-            g_mpu6050Flag = 0;
-        }
-        osDelay(1);
-    }
-    ulog("MotionTask exit");
 }

@@ -87,5 +87,4 @@ uint8_t MPU_Init(void);
 short MPU_GetTemperature(void);
 uint8_t MPU_GetGyroscope(short *gx, short *gy, short *gz);
 uint8_t MPU_GetAccelerometer(short *ax, short *ay, short *az);
-extern uint16_t g_mpu6050Flag;
 #endif

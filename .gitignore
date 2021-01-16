@@ -4,6 +4,7 @@ DebugConfig
 output
 RTE
 *.uvguix.*
+*.crf
 
 # Prerequisites
 *.d
