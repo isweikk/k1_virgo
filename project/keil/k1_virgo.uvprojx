@@ -809,33 +809,43 @@
           </Files>
         </Group>
         <Group>
-          <GroupName>user/components</GroupName>
+          <GroupName>components/com</GroupName>
           <Files>
-            <File>
-              <FileName>dev_oled.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\user\components\oled\dev_oled.c</FilePath>
-            </File>
-            <File>
-              <FileName>font_dot.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\user\components\oled\font_dot.c</FilePath>
-            </File>
-            <File>
-              <FileName>dev_misc.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\user\components\misc\dev_misc.c</FilePath>
-            </File>
             <File>
               <FileName>console.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\user\components\com\console.c</FilePath>
             </File>
             <File>
-              <FileName>util_sys.c</FileName>
+              <FileName>protocol.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\user\components\util\util_sys.c</FilePath>
+              <FilePath>..\..\user\components\com\protocol.c</FilePath>
             </File>
+            <File>
+              <FileName>uart_common.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\user\components\com\uart_common.c</FilePath>
+            </File>
+            <File>
+              <FileName>wireless.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\user\components\com\wireless.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>components/misc</GroupName>
+          <Files>
+            <File>
+              <FileName>dev_misc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\user\components\misc\dev_misc.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>components/motion</GroupName>
+          <Files>
             <File>
               <FileName>inv_mpu.c</FileName>
               <FileType>1</FileType>
@@ -865,6 +875,31 @@
               <FileName>motor.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\user\components\motion\motor.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>components/ui</GroupName>
+          <Files>
+            <File>
+              <FileName>dev_oled.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\user\components\ui\dev_oled.c</FilePath>
+            </File>
+            <File>
+              <FileName>font_dot.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\user\components\ui\font_dot.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>components/util</GroupName>
+          <Files>
+            <File>
+              <FileName>util_sys.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\user\components\util\util_sys.c</FilePath>
             </File>
           </Files>
         </Group>

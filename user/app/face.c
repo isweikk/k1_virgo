@@ -10,7 +10,7 @@
 #include "stdlib.h"
 #include "cmsis_os.h"
 
-#include "components/oled/dev_oled.h"
+#include "components/ui/dev_oled.h"
 
 #define DELAY_MS(a) osDelay(a)
 

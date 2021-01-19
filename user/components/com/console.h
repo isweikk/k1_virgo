@@ -10,5 +10,6 @@
 #define __CONSOLE_H__
 
 void ConsoleInit(void);
+void ConsoleUartRxCallback(void);
 
 #endif

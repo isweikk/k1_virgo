@@ -202,7 +202,7 @@ void ConsoleSendData(uint8_t *data, uint16_t len)
 // console处理策略，是一行接收完整，则开始处理命令
 // 如果超出缓冲区大小，则回显回车
 // 这是中断回调处理，有发送函数可能会影响效率，考虑重构
-void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
+void ConsoleUartRxCallback(void)
 {
     uint16_t rxLen = GetRxLen();
     if (g_rxOneByte == RX_ASCII_BACKSPACE) {

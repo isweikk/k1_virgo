@@ -16,6 +16,7 @@
 #include "components/misc/dev_misc.h"
 #include "components/util/util_sys.h"
 #include "components/com/console.h"
+#include "components/com/wireless.h"
 #include "components/motion/controller.h"
 
 osThreadId_t defaultTaskHandle;
@@ -42,8 +43,15 @@ const osThreadAttr_t myMiscTaskAttr = {
 osThreadId_t myMotionTaskHdl;
 const osThreadAttr_t myMotionTaskAttr = {
     .name = "myMotionTask",
-    .priority = (osPriority_t)osPriorityHigh,
+    .priority = (osPriority_t)osPriorityRealtime,
     .stack_size = 128 * 4
+};
+
+osThreadId_t myComTaskHdl;
+const osThreadAttr_t myComTaskAttr = {
+    .name = "myComTask",
+    .priority = (osPriority_t)osPriorityHigh,
+    .stack_size = 1024
 };
 
 osMessageQueueId_t myQueue01Handle;
@@ -54,7 +62,6 @@ const osMessageQueueAttr_t myQueue01_attributes = {
 void StartDefaultTask(void *argument);
 void FaceTask(void *argument);
 void MiscTask(void *argument);
-void MotionTask(void *argument);
 
 void OsTaskRun(void)
 {
@@ -81,6 +88,11 @@ void OsTaskRun(void)
     myMotionTaskHdl = osThreadNew(MotionTask, NULL, &myMotionTaskAttr);
     if (myMotionTaskHdl == NULL) {
         uloge("MotionTask fail");
+    }
+
+    myComTaskHdl = osThreadNew(WirelessTask, NULL, &myComTaskAttr);
+    if (myComTaskHdl == NULL) {
+        uloge("ComTask fail");
     }
     ulog("Create all tasks OK");
 

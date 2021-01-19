@@ -12,10 +12,10 @@
 #include <string.h>
 
 #include "typedef.h"
-#include "bsp_gpio.h"
-#include "bsp_motor.h"
-#include "bsp_servo.h"
-#include "bsp_timer.h"
+// #include "bsp_gpio.h"
+// #include "bsp_motor.h"
+// #include "bsp_servo.h"
+// #include "bsp_timer.h"
 
 #define 	MOT_RUN_CHAR     '1' // 按键前
 #define 	MOT_BACK_CHAR    '2' // 按键后
@@ -41,68 +41,110 @@ int ParseKV2Val(const char *kv_str, const char *key)
     return i;
 }
 
-int ParseString(const char *str, StCmdParam * prm)
+CmdKeyword CmdKeywordMap[] = {
+    { "MODE", CMD_VAL_INT },
+    { "PID", CMD_VAL_FLOAT },
+};
+
+uint32_t ParseOptTypeFromCmdStr(const char *cmdStr, uint32_t len, uint8_t *optType)
 {
-    int len = strlen(str);
-    char proto_str[128] = {0};
-    char *kv_tmp = NULL;
-    int val = 0;
-    int valid_flag = 0;
+    // 格式"A00" "A01" "A02"
+    if (len != 3) {
+        return RET_ERR;
+    }
+
+    uint8_t key1 = cmdStr[0];
+    uint8_t key2 = (cmdStr[1] - '0') * 10 + cmdStr[2] - '0';
+    if (key2 >= CMD_OPT_BUTT) {
+        return RET_ERR;
+    }
     
-    memcpy(proto_str, str, len + 1);
-    
-    if ((kv_tmp = strstr(proto_str, "4WD")) != NULL) { //关键字命令
-        
-        //如果是模式选择，则只解析模式
-        if ((kv_tmp = strstr(proto_str, "MODE")) != NULL) {
-            val = ParseKV2Val(kv_tmp, "MODE");
-            if (val != VAL_ERROR && val > 0) {
-                prm->mode = val;
-                valid_flag++;
-                return EVN_OK;
-            }
-        }
-        //如:$4WD,PTZ180# 舵机转动到180度
-        if ((kv_tmp = strstr(proto_str, "PTZ")) != NULL) {
-            val = ParseKV2Val(kv_tmp, "PTZ");
-            if (val != VAL_ERROR) {
-                prm->ptz = val;
-                valid_flag++;
-            }
-        }
-        //如:$4WD,CLR255,CLG0,CLB0# 七彩灯亮红色
-        if ((kv_tmp = strstr(proto_str, "CLR")) != NULL) {
-            val = ParseKV2Val(kv_tmp, "CLR");
-            if (val != VAL_ERROR) {
-                prm->color = val;
-                valid_flag++;
-            }
-        }
-        //
-        if (valid_flag) {
-            prm->type = 2;
-        }
-    } else {    //通用控制命令
-        //如:$1,0,0,0,0,0,0,0,0,0#    小车前进
-        val = atoi(&proto_str[3]);
-        if (val > 0) {
-            prm->spin = val;
-            valid_flag++;
-        } else {
-            val = atoi(&proto_str[1]);
-            prm->steer = val;
-            valid_flag++;
-        }
-        val = atoi(&proto_str[7]);
-        if (val > 0) {
-            prm->gearbox = val;
-            valid_flag++;
-        }
-        
-        if (valid_flag) {
-            prm->type = 1;
+    *optType = key2;
+    return RET_OK;
+}
+
+uint32_t ParseKeyword(const char *keyword, uint8_t len, uint16_t *key)
+{
+    uint16_t keywordMax = sizeof(CmdKeywordMap) / sizeof(CmdKeyword);
+    for (uint16_t i = 0; i < keywordMax; i++) {
+        if (strncmp(keyword, CmdKeywordMap[i].keyword, len) == 0) {
+            *key = i;
+            return RET_OK;
         }
     }
-    return EVN_OK;
+    return RET_ERR;
+}
+
+uint32_t ParseKeyValFromCmdStr(const char *cmdStr, uint32_t len, uint16_t *key, uint32_t *val)
+{
+    char keyword[16] = {0};
+    char valStr[16] = {0};
+    char *ptr = NULL;
+
+    if ((ptr = strchr(cmdStr, PROT_KEY_VAL_SPLIT_CHAR)) == NULL) {
+        return VAL_ERROR;
+    }
+
+    if (strncpy(keyword, cmdStr, ptr - cmdStr) == NULL) {
+        return VAL_ERROR;
+    }
+
+    if (strncpy(valStr, ptr + 1, len - (ptr - cmdStr)) == NULL) {
+        return VAL_ERROR;
+    }
+
+    uint32_t ret = ParseKeyword(keyword, ptr - cmdStr, key);
+    if (ret != RET_OK) {
+        return ret;
+    }
+    
+    if (CmdKeywordMap[*key].valType == CMD_VAL_INT) {
+        *val = atoi(valStr);
+    } else {
+        *(float *)val = atof(valStr);
+    }
+    return RET_OK;
+}
+
+int ParseCmdString(const uint8_t *cmdStr, uint32_t len, ProtoCmdPrm *cmd)
+{
+    char protoStr[PROT_CMD_LEN_MAX] = {0};
+    char *ptr = NULL;
+    char *kvTmp = NULL;
+    
+    cmd->cmdCnt = 0;
+    cmd->optType = CMD_OPT_BUTT;
+    memcpy(protoStr, cmdStr, len + 1);
+
+    // 解析操作类型 "$A01,"，取出A01
+    kvTmp = protoStr + 1;   // 跳过起始符
+    if ((ptr = strchr(kvTmp, ',')) == NULL) {
+        return VAL_ERROR;
+    }
+    uint32_t ret = ParseOptTypeFromCmdStr(kvTmp, ptr - kvTmp, &cmd->optType);
+    if (ret != RET_OK) {
+        return ret;
+    }
+    kvTmp = ptr + 1;
+
+    // 循环解析数据单元
+    for (uint8_t i = 0; i < PROT_CMD_UNIT_MAX; i++) {
+        if ((ptr = strchr(kvTmp, ',')) != NULL || (ptr = strchr(kvTmp, '#')) != NULL) {
+            ret = ParseKeyValFromCmdStr(kvTmp, ptr - kvTmp, &cmd->cmd[i].key, (uint32_t *)cmd->cmd[i].val);
+            if (ret != RET_OK) {
+                return ret;
+            }
+            cmd->cmdCnt++;
+
+            if (*ptr == '#') {
+                break;
+            }
+            kvTmp = ptr + 1;
+        } else {
+            return RET_ERR;
+        }
+    }
+
+    return RET_OK;
 }
 
